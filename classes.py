@@ -37,7 +37,7 @@ def dist(player,target):
     return(int(round(math.sqrt(diff_x + diff_y))))
 
 def z_dist(a,b):
-    return((a[0]-b[0])**2 + (a[1]-b[1])**2)
+    return(((a[0]-b[0])**2 + (a[1]-b[1])**2)**0.5)
 
 def one_step_check_new(unit,theta,battle):
     def point_in_aoe(z,area):
@@ -45,8 +45,8 @@ def one_step_check_new(unit,theta,battle):
         if(z_dist(z,c)<area.radius):
             return(True)
     zu = [unit.rect.x+unit.width/2, unit.rect.y+unit.width/2]
+    dst = [zu[0]+unit.speed*math.cos(theta), zu[1]+unit.speed*math.sin(theta)]
     for area in battle.aoe_list:
-        dst = [zu[0]+2*math.cos(theta), zu[1]+2*math.sin(theta)]
         if point_in_aoe(dst,area):
             return(False,area)
     return(True,None)
@@ -209,16 +209,30 @@ class Melee(pygame.sprite.Sprite):
             #if(one_step_check(self,theta) == True):
                 #self.rect.y = int(round(self.rect.y + self.speed*math.sin(theta)))
                 #self.rect.x = int(round(self.rect.x + self.speed*math.cos(theta)))
+            
+            # check if this motion would put us into an AoE            
             boolean,area = one_step_check_new(self,theta,battle)
-            if(boolean):
+            if boolean:
                 self.rect.y = int(round(self.rect.y + self.speed*math.sin(theta)))
                 self.rect.x = int(round(self.rect.x + self.speed*math.cos(theta)))
             else:
-                print('Alt step')
-                if(above_ray(self,area,self.target)):
-                    self.rect.y = int(round(self.rect.y + 1))
-                else:
-                    self.rect.y = int(round(self.rect.y - 1))
+                diff_y = float(self.rect.y - self.target.rect.y)
+                diff_x = float(self.rect.x - self.target.rect.x)
+                v_x = diff_y
+                v_y = -diff_x                
+
+                v_len = math.sqrt(v_x**2 + v_y**2)
+                t_x = v_x/v_len
+                t_y = v_y/v_len
+                print 't_x,t_y = %f,%f' % (t_x,t_y)
+                self.rect.y = int(round(self.rect.y + self.speed*t_x))
+                self.rect.x = int(round(self.rect.x + self.speed*t_y))
+#            else:
+#                print('Alt step')
+#                if above_ray(self,area,self.target):
+#                    self.rect.y = int(round(self.rect.y + 1))
+#                else:
+#                    self.rect.y = int(round(self.rect.y - 1))
         # If in range and have mana, cast
         else:
             if(self.mana >= 180 and self.target.frozen == False):
@@ -668,7 +682,12 @@ class Battle(object):
             self.screen.blit(text, [300,250])
             text_dir = self.font.render("WASD: Move, I: OH Innervate, O: MH Innervate, J: Shield Wall",True,BLACK)
             self.screen.blit(text_dir, [500,250])
-        
+    
+    def debug_aoe(self):
+        for aoe in self.aoe_list:
+            center = [aoe.rect.x + aoe.radius, aoe.rect.y + aoe.radius]
+            print 'aoe has center %d, %d' % (int(round(center[0])),int(round(center[1])))
+    
     def run(self):
         while not self.done:
             
@@ -760,6 +779,8 @@ class Battle(object):
                         self.player.shield_wall(self)
                     elif event.key == pygame.K_SPACE:
                         self.boss.frozen = False
+                    elif event.key == pygame.K_z:
+                        self.debug_aoe()
                 # Reset speed when key goes up
                 elif event.type == pygame.KEYUP:
                     if event.key == pygame.K_a:
@@ -829,7 +850,6 @@ class Battle(object):
 
             # Clear the screen
             self.screen.fill(WHITE)
-        
             # Draw all the spites
             self.update_hud()
             # Go ahead and update the screen with what we've drawn.
