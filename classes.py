@@ -24,6 +24,8 @@ w = 203
 screen_width = 1203
 screen_height = 600
 
+player_speed = 4
+
 # helper functions
 
 # returns the distance between player and target
@@ -377,7 +379,7 @@ class Healer(pygame.sprite.Sprite):
 
 class Boss(pygame.sprite.Sprite):
     """ This class represents the boss. """
-    damage = 105
+    damage = 50
     mana = 1000
     name = "Boss"
     frozen = True
@@ -443,8 +445,8 @@ class Boss(pygame.sprite.Sprite):
                 self.rect.x = int(round(self.rect.x + self.speed*math.cos(theta)))
             # Else, cleave target
             else:
-                if(self.mana >= 600):
-                    self.mana -= 600
+                if(self.mana >= 300):
+                    self.mana -= 300
                     self.cleave(battle)
         # Mana regen
         self.mana = min(1000,self.mana+5)
@@ -482,8 +484,11 @@ class AoE_small(pygame.sprite.Sprite):
         self.radius = float(width)/4
 
 class Battle(object):
-    def __init__(self):
-        difficulty = int(input("How much health should the boss have? "))
+    def __init__(self,difficulty=None):
+        
+        if not difficulty:
+            print 'difficulty=None?'
+            difficulty = int(raw_input("How much health should the boss have? "))
         self.difficulty = difficulty
     
     def initialize(self):
@@ -651,15 +656,15 @@ class Battle(object):
         self.screen.blit(text8, [85,260])
     
         if self.healer.innervate_ready:
-            sh1 = "MH innervate up"
+            sh1 = "MH innervate up [I]"
         else:
             sh1 = "..."
         if self.healer2.innervate_ready:
-            sh2 = "OH innervate up"
+            sh2 = "OH innervate up [O]"
         else:
             sh2 = "..."
         if self.player.shield_wall_ready:
-            sh3 = "MT shield wall up"
+            sh3 = "MT shield wall up [J]"
         else:
             sh3 = "..."
             
@@ -764,13 +769,13 @@ class Battle(object):
                     self.player.shield_wall_ready = True
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_a:
-                        self.player.changespeed(-3, 0)
+                        self.player.changespeed(-6, 0)
                     elif event.key == pygame.K_d:
-                        self.player.changespeed(3, 0)
+                        self.player.changespeed(6, 0)
                     elif event.key == pygame.K_w:
-                        self.player.changespeed(0, -3)
+                        self.player.changespeed(0, -6)
                     elif event.key == pygame.K_s:
-                        self.player.changespeed(0, 3)
+                        self.player.changespeed(0, 6)
                     elif event.key == pygame.K_i:
                         self.healer.innervate(self)
                     elif event.key == pygame.K_o:
@@ -784,13 +789,13 @@ class Battle(object):
                 # Reset speed when key goes up
                 elif event.type == pygame.KEYUP:
                     if event.key == pygame.K_a:
-                        self.player.changespeed(3, 0)
+                        self.player.changespeed(6, 0)
                     elif event.key == pygame.K_d:
-                        self.player.changespeed(-3, 0)
+                        self.player.changespeed(-6, 0)
                     elif event.key == pygame.K_w:
-                        self.player.changespeed(0, 3)
+                        self.player.changespeed(0, 6)
                     elif event.key == pygame.K_s:
-                        self.player.changespeed(0, -3)
+                        self.player.changespeed(0, -6)
             
             # --- Game logic
 
