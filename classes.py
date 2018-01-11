@@ -535,7 +535,7 @@ class Battle(object):
             getattr(self,g).add(self.healer2)
         
         # Create a red boss with velocity 4 and target player
-        self.boss = Boss(RED,self.player,4,self.difficulty)
+        self.boss = Boss(RED,self.player,7,self.difficulty)
         self.boss.rect.x = 350
         self.boss.rect.y = 200
         self.boss_list.add(self.boss)
