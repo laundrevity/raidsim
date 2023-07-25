@@ -20,15 +20,15 @@ while not done:
     else:
         valid_response = False
         while not valid_response:
-            input_string = raw_input('Continue? [y/n] ')
+            input_string = input('Continue? [y/n] ')
             valid_response = (input_string in ['y','n'])
         
         if input_string == 'y':
             difficulty += 100
-            print 'Commencing battle with boss HP = %d' % difficulty
+            print('Commencing battle with boss HP = %d' % difficulty)
         else:
             done = True
-            print 'Until next time'
+            print('Until next time')
         
         if not done:
             battle = Battle(difficulty)

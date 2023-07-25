@@ -226,7 +226,7 @@ class Melee(pygame.sprite.Sprite):
                 v_len = math.sqrt(v_x**2 + v_y**2)
                 t_x = v_x/v_len
                 t_y = v_y/v_len
-                print 't_x,t_y = %f,%f' % (t_x,t_y)
+                print('t_x,t_y = %f,%f' % (t_x,t_y))
                 self.rect.y = int(round(self.rect.y + self.speed*t_x))
                 self.rect.x = int(round(self.rect.x + self.speed*t_y))
 #            else:
@@ -487,8 +487,8 @@ class Battle(object):
     def __init__(self,difficulty=None):
         
         if not difficulty:
-            print 'difficulty=None?'
-            difficulty = int(raw_input("How much health should the boss have? "))
+            print('difficulty=None?')
+            difficulty = int(input("How much health should the boss have? "))
         self.difficulty = difficulty
     
     def initialize(self):
@@ -691,7 +691,7 @@ class Battle(object):
     def debug_aoe(self):
         for aoe in self.aoe_list:
             center = [aoe.rect.x + aoe.radius, aoe.rect.y + aoe.radius]
-            print 'aoe has center %d, %d' % (int(round(center[0])),int(round(center[1])))
+            print('aoe has center %d, %d' % (int(round(center[0])),int(round(center[1]))))
     
     def run(self):
         while not self.done:
